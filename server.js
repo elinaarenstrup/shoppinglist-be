@@ -45,8 +45,8 @@ Item.deleteMany().then(() => {
 const port = process.env.PORT || 8080;
 const app = express();
 
-//npm express-list-endpoints
-const listEndpoints = require("express-list-endpoints");
+/* //npm express-list-endpoints
+const listEndpoints = require("express-list-endpoints"); */
 
 // Add middlewares to enable cors and json body parsing
 app.use(cors());
