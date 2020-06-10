@@ -10,19 +10,20 @@ mongoose.promise = Promise;
 const Item = mongoose.model("Item", {
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   category: {
     type: String,
-    required: true,
+    required: false,
   },
   quantity: {
     type: Number,
     default: 0,
-    required: true,
+    required: false,
   },
 });
 
+// Hardcoded array of items just to have something to work with
 Item.deleteMany().then(() => {
   new Item({
     name: "Apple",
@@ -77,7 +78,7 @@ app.post("/items", async (req, res) => {
   } catch (err) {
     // Bad-req, send bad status code to the client
     res.status(404).json({
-      message: "Sorry, could not save this thought to database.",
+      message: "Sorry, could not save this item to database.",
       errors: err.errors,
     });
   }
