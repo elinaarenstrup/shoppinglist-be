@@ -45,8 +45,8 @@ Item.deleteMany().then(() => {
 const port = process.env.PORT || 8080;
 const app = express();
 
-/* //npm express-list-endpoints
-const listEndpoints = require("express-list-endpoints"); */
+//npm express-list-endpoints
+const listEndpoints = require("express-list-endpoints");
 
 // Add middlewares to enable cors and json body parsing
 app.use(cors());
@@ -54,20 +54,33 @@ app.use(bodyParser.json());
 
 // Endpoints here
 app.get("/", (req, res) => {
+  res.send(listEndpoints(app));
+});
+
+// Get all items
+app.get("/items", (req, res) => {
   Item.find().then((items) => {
     res.json(items);
   });
-  /* res.send(listEndpoints(app)); */
 });
 
-app.get("/:name", (req, res) => {
-  Item.findOne({ name: req.params.name }).then((item) => {
-    if (item) {
-      res.json(item);
-    } else {
-      res.status(404).json({ error: "Not found" });
-    }
-  });
+// Post/add new thought
+app.post("/items", async (req, res) => {
+  const { postedItem } = req.body;
+  // Then use our mongoose model to create the database entry
+  const item = new Item({ postedItem });
+
+  try {
+    // Success-case, send good status code to the client
+    const savedItem = await item.save();
+    res.status(200).json(savedItem);
+  } catch (err) {
+    // Bad-req, send bad status code to the client
+    res.status(404).json({
+      message: "Sorry, could not save this thought to database.",
+      errors: err.errors,
+    });
+  }
 });
 
 // Start the server
