@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/shoppinglist-be";
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.Promise = Promise;
+mongoose.promise = Promise;
 
 const Item = mongoose.model("Item", {
   name: {
