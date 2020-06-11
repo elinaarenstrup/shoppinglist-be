@@ -10,36 +10,28 @@ mongoose.promise = Promise;
 const Item = mongoose.model("Item", {
   name: {
     type: String,
-    required: false,
+    required: true,
   },
   category: {
     type: String,
-    required: false,
+    required: true,
   },
   quantity: {
     type: Number,
     default: 0,
-    required: false,
+    required: true,
   },
-});
-
-// Hardcoded array of items just to have something to work with
-Item.deleteMany().then(() => {
-  new Item({
-    name: "Apple",
-    category: "Fruit",
-    quantity: 5,
-  }).save();
-  new Item({
-    name: "Sandwich",
-    category: "Food",
-    quantity: 2,
-  }).save();
-  new Item({
-    name: "Lollipop",
-    category: "Candy",
-    quantity: 5,
-  }).save();
+  complete: {
+    type: Boolean,
+    default: false,
+  },
+  startDate: {
+    type: Date,
+    default: Date.now,
+  },
+  dueDate: {
+    type: Date,
+  },
 });
 
 // Defines the port the app will run on. Defaults to 8080.
@@ -58,28 +50,30 @@ app.get("/", (req, res) => {
   res.send(listEndpoints(app));
 });
 
-// Get all items
-app.get("/items", (req, res) => {
-  Item.find().then((items) => {
-    res.json(items);
-  });
+// GET 20 items, desc start dates
+app.get("/items", async (req, res) => {
+  const items = await Item.find().sort({ startDate: "desc" }).limit(20).exec();
+  res.json(items);
 });
 
-// Post/add new thought
+// POST
 app.post("/items", async (req, res) => {
-  const { postedItem } = req.body;
-  // Then use our mongoose model to create the database entry
-  const item = new Item({ postedItem });
+  //Retrive info sent by client to API endpoint
+  const { name, category, quantity, complete } = req.body;
 
+  //Use mongoose model to create db entry
+  const item = new Item({ name, category, quantity, complete });
+
+  //Save entry
   try {
-    // Success-case, send good status code to the client
+    //Sucess return json object
     const savedItem = await item.save();
-    res.status(200).json(savedItem);
+    res.status(201).json(savedItem);
   } catch (err) {
-    // Bad-req, send bad status code to the client
-    res.status(404).json({
-      message: "Sorry, could not save this item to database.",
-      errors: err.errors,
+    //else bad req message
+    res.status(400).json({
+      message: "Could not save item to the Database",
+      error: err.errors,
     });
   }
 });
