@@ -21,16 +21,13 @@ const Item = mongoose.model("Item", {
     default: 0,
     required: true,
   },
-  complete: {
+  needsMore: {
     type: Boolean,
     default: false,
   },
   startDate: {
     type: Date,
     default: Date.now,
-  },
-  dueDate: {
-    type: Date,
   },
 });
 
