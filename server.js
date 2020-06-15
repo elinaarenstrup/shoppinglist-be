@@ -42,7 +42,7 @@ const listEndpoints = require("express-list-endpoints");
 app.use(cors());
 app.use(bodyParser.json());
 
-// Endpoints here
+// Routes here
 app.get("/", (req, res) => {
   res.send(listEndpoints(app));
 });
@@ -52,6 +52,8 @@ app.get("/items", async (req, res) => {
   const items = await Item.find().sort({ startDate: "desc" }).limit(20).exec();
   res.json(items);
 });
+
+
 
 // POST
 app.post("/items", async (req, res) => {
@@ -74,6 +76,34 @@ app.post("/items", async (req, res) => {
     });
   }
 });
+
+// Specific item by id
+app.get("/:item", async (req, res) => {
+  try {
+    const singleItem = await Item.findById(req.params.item);
+    res.json(singleItem)
+  } catch (err) {
+    res.status(400).json({
+      message: "Could not find item id in the Database",
+      error: err.errors,
+    });
+  }
+});
+
+//Delete specific item
+app.delete("/:item", async (req, res) => {
+  try {
+    const removedItem = await Item.remove({ _id: req.params.item }) //_id needs to match req.params.item
+    res.json(removedItem)
+  } catch (err) {
+    res.status(400).json({
+      message: "Could not find item id in the Database",
+      error: err.errors,
+    });
+  }
+});
+
+//Edit specific item
 
 // Start the server
 app.listen(port, () => {
