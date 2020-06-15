@@ -91,9 +91,9 @@ app.get("/:item", async (req, res) => {
 });
 
 //Delete specific item
-app.delete("/:item", async (req, res) => {
+app.delete("/:itemId", async (req, res) => {
   try {
-    const removedItem = await Item.remove({ _id: req.params.item }) //_id needs to match req.params.item
+    const removedItem = await Item.remove({ _id: req.params.itemId }) //_id needs to match req.params.item
     res.json(removedItem)
   } catch (err) {
     res.status(400).json({
@@ -104,6 +104,17 @@ app.delete("/:item", async (req, res) => {
 });
 
 //Edit specific item
+app.patch("/:itemId", async (req, res) => {
+  try {
+    const editedItem = await Item.updateOne({ _id: req.params.itemId }, { $set: { name: req.body.name, quantity: req.body.quantity, category: req.body.category } })
+    res.json(editedItem)
+  } catch (err) {
+    res.status(400).json({
+      message: "Could not find item id in the Database",
+      error: err.errors,
+    });
+  }
+});
 
 // Start the server
 app.listen(port, () => {
